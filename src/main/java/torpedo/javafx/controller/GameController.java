@@ -154,11 +154,11 @@ public class GameController {
     }
 
     private Field getCurrentPlayerField() {
-        return gameState == GameState.PLAYER_ONE_PLACE || gameState == GameState.PLAYER_ONE_TIPP ? playerOneField : playerTwoField;
+        return gameState == GameState.PLAYER_ONE_PLACE || gameState == GameState.PLAYER_ONE_GUESS ? playerOneField : playerTwoField;
     }
 
     private Field getEnemyPlayerField() {
-        return gameState == GameState.PLAYER_ONE_PLACE || gameState == GameState.PLAYER_ONE_TIPP ? playerTwoField : playerOneField;
+        return gameState == GameState.PLAYER_ONE_PLACE || gameState == GameState.PLAYER_ONE_GUESS ? playerTwoField : playerOneField;
     }
 
     private void drawFieldShips(Field field, GridPane grid) {
@@ -220,10 +220,20 @@ public class GameController {
                     nextButton.setDisable(false);
                 }
             }
-        } else if (gameState == GameState.PLAYER_ONE_TIPP || gameState == GameState.PLAYER_TWO_TIPP) {
+        } else if (gameState == GameState.PLAYER_ONE_GUESS || gameState == GameState.PLAYER_TWO_GUESS) {
             if (target == 2 && nextButton.isDisable()) {
                 if (!getEnemyPlayerField().tryTip(row, col)) {
                     nextButton.setDisable(false);
+                } else {
+                    if (getEnemyPlayerField().isSolved()) {
+                        if (gameState.equals(GameState.PLAYER_ONE_GUESS))
+                            gameState = GameState.PLAYER_ONE_WIN;
+                        else
+                            gameState = GameState.PLAYER_TWO_WIN;
+
+                        gameOver.setValue(true);
+                        giveUpButton.setText("Finish");
+                    }
                 }
             }
         }
@@ -237,11 +247,11 @@ public class GameController {
                 gameState = GameState.PLAYER_TWO_PLACE;
                 break;
             case PLAYER_TWO_PLACE:
-            case PLAYER_TWO_TIPP:
-                gameState = GameState.PLAYER_ONE_TIPP;
+            case PLAYER_TWO_GUESS:
+                gameState = GameState.PLAYER_ONE_GUESS;
                 break;
-            case PLAYER_ONE_TIPP:
-                gameState = GameState.PLAYER_TWO_TIPP;
+            case PLAYER_ONE_GUESS:
+                gameState = GameState.PLAYER_TWO_GUESS;
                 break;
         }
         nextButton.setDisable(true);

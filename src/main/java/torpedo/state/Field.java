@@ -99,4 +99,19 @@ public class Field {
         return false;
     }
 
+    public boolean isSolved() {
+        for (Ship s : this.ships) {
+            int size = 0;
+            if (s.getWidth() == 1) {
+                size = s.getHeight();
+            } else {
+                size = s.getWidth();
+            }
+
+            if (s.getDestroyed().size() != size)
+                return false;
+        }
+        return true;
+    }
+
 }
