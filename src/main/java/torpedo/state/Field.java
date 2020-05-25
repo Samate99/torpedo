@@ -8,9 +8,12 @@ import java.util.List;
 public class Field {
     @Getter
     private List<Ship> ships;
+    @Getter
+    private List<Integer> testedFields;
 
     public Field() {
         this.ships = new ArrayList<Ship>();
+        this.testedFields = new ArrayList<Integer>();
     }
 
     public int getNextSize() {
@@ -67,6 +70,33 @@ public class Field {
         this.ships.add(newShip);
 
         return true;
+    }
+
+    public boolean tryTip(int x, int y) {
+        if (!this.testedFields.contains(y * 10 + x + 1))
+            this.testedFields.add(y * 10 + x + 1);
+        else
+            return false;
+
+        for (Ship s : this.ships) {
+            if (s.isOverlap(new Ship(x, y, 1, 1), 0)) {
+                int destroyed = 0;
+                if (s.getWidth() == 1) {
+                    destroyed = y - s.getY();
+                } else {
+                    destroyed = x - s.getX();
+                }
+
+                if (s.getDestroyed().contains(destroyed))
+                    return false;
+
+                s.getDestroyed().add(destroyed);
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

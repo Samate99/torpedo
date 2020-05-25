@@ -2,6 +2,9 @@ package torpedo.state;
 
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 public class Ship {
     private int x;
@@ -10,6 +13,7 @@ public class Ship {
     private int height;
 
     private ShipState state;
+    private List<Integer> destroyed;
 
     public Ship(int x, int y, int width, int height) {
         this.x = x;
@@ -17,6 +21,7 @@ public class Ship {
         this.width = width;
         this.height = height;
         this.state = ShipState.BLACK;
+        this.destroyed = new ArrayList<Integer>();
     }
 
     public boolean isOverlap (Ship ship, int space) {

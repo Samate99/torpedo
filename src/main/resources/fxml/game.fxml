@@ -27,11 +27,20 @@
       </VBox>
    </right>
    <bottom>
-      <HBox alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
+      <HBox prefHeight="39.0" prefWidth="586.0" spacing="20.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="rotateButton" mnemonicParsing="false" onAction="#handleRotateButton" text="Vertical" />
-            <Button fx:id="resetButton" mnemonicParsing="false" onAction="#handleResetButton" text="Reset" />
-            <Button fx:id="giveUpButton" mnemonicParsing="false" onAction="#handleGiveUpButton" text="Give Up" />
+            <HBox alignment="CENTER" prefHeight="39.0" prefWidth="390.0" spacing="20.0">
+               <children>
+                  <Button fx:id="rotateButton" mnemonicParsing="false" onAction="#handleRotateButton" prefHeight="39.0" prefWidth="138.0" text="Vertical" />
+                  <Button fx:id="nextButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#handleNextButton" prefHeight="39.0" prefWidth="140.0" text="Next" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="39.0" prefWidth="390.0" spacing="20.0">
+               <children>
+                  <Button fx:id="resetButton" mnemonicParsing="false" onAction="#handleResetButton" text="Reset" />
+                  <Button fx:id="giveUpButton" mnemonicParsing="false" onAction="#handleGiveUpButton" text="Give Up" />
+               </children>
+            </HBox>
          </children>
          <BorderPane.margin>
             <Insets top="20.0" />

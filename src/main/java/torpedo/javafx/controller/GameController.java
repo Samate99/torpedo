@@ -27,6 +27,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import torpedo.results.GameResult;
 import torpedo.results.GameResultDao;
 import torpedo.state.Field;
+import torpedo.state.GameState;
 import torpedo.state.Ship;
 import torpedo.state.ShipState;
 
@@ -54,7 +55,7 @@ public class GameController {
     private IntegerProperty steps = new SimpleIntegerProperty();
     private Instant startTime;
 
-    private int playerTurn;
+    private GameState gameState;
 
     private HashMap<ShipState, Image> images;
 
@@ -83,6 +84,9 @@ public class GameController {
 
     @FXML
     private Button rotateButton;
+
+    @FXML
+    private Button nextButton;
 
     @FXML
     private Label notificationText;
@@ -137,7 +141,9 @@ public class GameController {
     private void resetGame() {
         playerOneField = new Field();
         playerTwoField = new Field();
-        playerTurn = 1;
+        gameState = GameState.PLAYER_ONE_PLACE;
+
+        nextButton.setDisable(true);
 
         steps.set(0);
         startTime = Instant.now();
@@ -148,7 +154,11 @@ public class GameController {
     }
 
     private Field getCurrentPlayerField() {
-        return playerTurn == 1 ? playerOneField : playerTwoField;
+        return gameState == GameState.PLAYER_ONE_PLACE || gameState == GameState.PLAYER_ONE_TIPP ? playerOneField : playerTwoField;
+    }
+
+    private Field getEnemyPlayerField() {
+        return gameState == GameState.PLAYER_ONE_PLACE || gameState == GameState.PLAYER_ONE_TIPP ? playerTwoField : playerOneField;
     }
 
     private void drawFieldShips(Field field, GridPane grid) {
@@ -156,20 +166,46 @@ public class GameController {
             for (int x = 0; x < s.getWidth(); x++) {
                 for (int y = 0; y < s.getHeight(); y++) {
                     ImageView view = (ImageView)grid.getChildren().get((s.getY() + y) * 10 + s.getX() + x + 1);
-                    view.setImage(images.get(s.getState()));
+
+                    if ((s.getWidth() == 1 && s.getDestroyed().contains(y)) || (s.getHeight() == 1 && s.getDestroyed().contains(x))) {
+                        view.setImage(images.get(ShipState.RED));
+                    } else {
+                        if (field.equals(getCurrentPlayerField()))
+                            view.setImage(images.get(s.getState()));
+                    }
                 }
             }
+        }
+
+        for (Integer i : field.getTestedFields()) {
+            ImageView view = (ImageView)grid.getChildren().get(i);
+            if (view.getImage().equals(images.get(ShipState.WHITE)))
+                if (field.equals(getEnemyPlayerField()))
+                    view.setImage(images.get(ShipState.CROSS));
         }
     }
 
     private void displayGameState() {
-        notificationText.setText("Place the next ship (" + playerOneField.getNextShipName() + ") with size " + playerOneField.getNextSize());
+        if (gameState == GameState.PLAYER_ONE_PLACE || gameState == GameState.PLAYER_TWO_PLACE) {
+            if (getCurrentPlayerField().getNextSize() == 0) {
+                notificationText.setText("Press the Next button, if you want to pass the round");
+            } else {
+                notificationText.setText("Place the next ship (" + getCurrentPlayerField().getNextShipName() + ") with size " + getCurrentPlayerField().getNextSize());
+            }
+        } else {
+            if (nextButton.isDisable()) {
+                notificationText.setText("Press an empty field in right grid");
+            } else {
+                notificationText.setText("Press the Next button to pass the round");
+            }
+        }
 
         // Clear grids (set image views to white)
         leftGrid.getChildren().stream().filter(s -> s instanceof ImageView).map(s -> (ImageView) s).forEach(s -> s.setImage(images.get(ShipState.WHITE)));
         rightGrid.getChildren().stream().filter(s -> s instanceof ImageView).map(s -> (ImageView) s).forEach(s -> s.setImage(images.get(ShipState.WHITE)));
 
         drawFieldShips(getCurrentPlayerField(), leftGrid);
+        drawFieldShips(getEnemyPlayerField(), rightGrid);
     }
 
     public void handleClickOnGrid(MouseEvent mouseEvent, int target) {
@@ -177,14 +213,38 @@ public class GameController {
         int col = GridPane.getColumnIndex((Node) mouseEvent.getTarget());
         log.debug("ImageView ({}, {}) is pressed", row, col);
 
-        if (target == 1) {
-            getCurrentPlayerField().addShip(row, col, rotateButton.getText().equals("Vertical"));
-        } else {
-
-
-            //playerTwoField.addShip(row, col, rotateButton.getText().equals("Vertical"));
+        if (gameState == GameState.PLAYER_ONE_PLACE || gameState == GameState.PLAYER_TWO_PLACE) {
+            if (target == 1) {
+                getCurrentPlayerField().addShip(row, col, rotateButton.getText().equals("Vertical"));
+                if (getCurrentPlayerField().getNextSize() == 0) {
+                    nextButton.setDisable(false);
+                }
+            }
+        } else if (gameState == GameState.PLAYER_ONE_TIPP || gameState == GameState.PLAYER_TWO_TIPP) {
+            if (target == 2 && nextButton.isDisable()) {
+                if (!getEnemyPlayerField().tryTip(row, col)) {
+                    nextButton.setDisable(false);
+                }
+            }
         }
 
+        displayGameState();
+    }
+
+    public void handleNextButton(ActionEvent actionEvent)  {
+        switch (gameState) {
+            case PLAYER_ONE_PLACE:
+                gameState = GameState.PLAYER_TWO_PLACE;
+                break;
+            case PLAYER_TWO_PLACE:
+            case PLAYER_TWO_TIPP:
+                gameState = GameState.PLAYER_ONE_TIPP;
+                break;
+            case PLAYER_ONE_TIPP:
+                gameState = GameState.PLAYER_TWO_TIPP;
+                break;
+        }
+        nextButton.setDisable(true);
         displayGameState();
     }
 
