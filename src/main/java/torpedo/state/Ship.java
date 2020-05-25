@@ -18,4 +18,8 @@ public class Ship {
         this.height = height;
         this.state = ShipState.BLACK;
     }
+
+    public boolean isOverlap (Ship ship, int space) {
+        return x < ship.x + ship.width + space && x + width + space > ship.x && y < ship.y + ship.height + space && y + height + space > ship.y;
+    }
 }
