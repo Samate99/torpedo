@@ -15,13 +15,13 @@ import javax.inject.Inject;
 import java.util.List;
 
 @Slf4j
-public class RollingCubesApplication extends Application {
+public class MainApplication extends Application {
 
     private GuiceContext context = new GuiceContext(this, () -> List.of(
             new AbstractModule() {
                 @Override
                 protected void configure() {
-                     install(new PersistenceModule("rolling-cubes"));
+                     install(new PersistenceModule("torpedo"));
                      bind(GameResultDao.class);
                  }
             }
@@ -36,7 +36,7 @@ public class RollingCubesApplication extends Application {
         context.init();
         fxmlLoader.setLocation(getClass().getResource("/fxml/launch.fxml"));
         Parent root = fxmlLoader.load();
-        primaryStage.setTitle("Rolling Cubes");
+        primaryStage.setTitle("Torpedo");
         primaryStage.setResizable(false);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();

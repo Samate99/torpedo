@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" version="2.2">
-    <persistence-unit name="rolling-cubes" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="torpedo" transaction-type="RESOURCE_LOCAL">
         <validation-mode>AUTO</validation-mode>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="${db.driver}"/>

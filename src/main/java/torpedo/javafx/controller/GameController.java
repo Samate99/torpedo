@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import torpedo.results.GameResult;
 import torpedo.results.GameResultDao;
-import torpedo.state.RollingCubesState;
+import torpedo.state.Field;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -43,11 +43,12 @@ public class GameController {
     @Inject
     private GameResultDao gameResultDao;
 
-    private String playerName;
-    private RollingCubesState gameState;
+    private String playerOneName;
+    private String playerTwoName;
+    private Field playerOneField;
+    private Field playerTwoField;
     private IntegerProperty steps = new SimpleIntegerProperty();
     private Instant startTime;
-    private List<Image> cubeImages;
 
     @FXML
     private Label messageLabel;
@@ -71,21 +72,13 @@ public class GameController {
 
     private BooleanProperty gameOver = new SimpleBooleanProperty();
 
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
+    public void setPlayerName(String playerName, String otherPlayerName) {
+        this.playerOneName = playerName;
+        this.playerTwoName = otherPlayerName;
     }
 
     @FXML
     public void initialize() {
-        cubeImages = List.of(
-                new Image(getClass().getResource("/images/cube0.png").toExternalForm()),
-                new Image(getClass().getResource("/images/cube1.png").toExternalForm()),
-                new Image(getClass().getResource("/images/cube2.png").toExternalForm()),
-                new Image(getClass().getResource("/images/cube3.png").toExternalForm()),
-                new Image(getClass().getResource("/images/cube4.png").toExternalForm()),
-                new Image(getClass().getResource("/images/cube5.png").toExternalForm()),
-                new Image(getClass().getResource("/images/cube6.png").toExternalForm())
-        );
         stepsLabel.textProperty().bind(steps.asString());
         gameOver.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
@@ -99,42 +92,26 @@ public class GameController {
     }
 
     private void resetGame() {
-        gameState = new RollingCubesState(RollingCubesState.NEAR_GOAL);
+        playerOneField = new Field();
+        playerTwoField = new Field();
+
         steps.set(0);
         startTime = Instant.now();
         gameOver.setValue(false);
         displayGameState();
         createStopWatch();
-        Platform.runLater(() -> messageLabel.setText("Good luck, " + playerName + "!"));
+        Platform.runLater(() -> messageLabel.setText("Battle: " + playerOneName + " vs " + playerTwoField + "!"));
     }
 
     private void displayGameState() {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                ImageView view = (ImageView) gameGrid.getChildren().get(i * 3 + j);
-                if (view.getImage() != null) {
-                    log.trace("Image({}, {}) = {}", i, j, view.getImage().getUrl());
-                }
-                view.setImage(cubeImages.get(gameState.getTray()[i][j].getValue()));
-            }
-        }
+
     }
 
     public void handleClickOnCube(MouseEvent mouseEvent) {
         int row = GridPane.getRowIndex((Node) mouseEvent.getSource());
         int col = GridPane.getColumnIndex((Node) mouseEvent.getSource());
         log.debug("Cube ({}, {}) is pressed", row, col);
-        if (! gameState.isSolved() && gameState.canRollToEmptySpace(row, col)) {
-            steps.set(steps.get() + 1);
-            gameState.rollToEmptySpace(row, col);
-            if (gameState.isSolved()) {
-                gameOver.setValue(true);
-                log.info("Player {} has solved the game in {} steps", playerName, steps.get());
-                messageLabel.setText("Congratulations, " + playerName + "!");
-                resetButton.setDisable(true);
-                giveUpButton.setText("Finish");
-            }
-        }
+
         displayGameState();
     }
 
@@ -162,8 +139,8 @@ public class GameController {
 
     private GameResult createGameResult() {
         GameResult result = GameResult.builder()
-                .player(playerName)
-                .solved(gameState.isSolved())
+                .player(playerOneName)
+                .solved(false)
                 .duration(Duration.between(startTime, Instant.now()))
                 .steps(steps.get())
                 .build();
