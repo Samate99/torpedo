@@ -9,6 +9,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -26,12 +27,15 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import torpedo.results.GameResult;
 import torpedo.results.GameResultDao;
 import torpedo.state.Field;
+import torpedo.state.Ship;
+import torpedo.state.ShipState;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -50,11 +54,16 @@ public class GameController {
     private IntegerProperty steps = new SimpleIntegerProperty();
     private Instant startTime;
 
+    private HashMap<ShipState, Image> images;
+
     @FXML
     private Label messageLabel;
 
     @FXML
-    private GridPane gameGrid;
+    private GridPane playerOneGrid;
+
+    @FXML
+    private GridPane playerTwoGrid;
 
     @FXML
     private Label stepsLabel;
@@ -88,6 +97,32 @@ public class GameController {
                 stopWatchTimeline.stop();
             }
         });
+        images = new HashMap<ShipState, Image>();
+
+        images.put(ShipState.WHITE, new Image(this.getClass().getResource("/images/white.png").toExternalForm()));
+        images.put(ShipState.BLACK, new Image(this.getClass().getResource("/images/black.png").toExternalForm()));
+        images.put(ShipState.CROSS, new Image(this.getClass().getResource("/images/cross.png").toExternalForm()));
+        images.put(ShipState.RED, new Image(this.getClass().getResource("/images/red.png").toExternalForm()));
+
+        playerOneGrid.setOnMouseClicked(e -> handleClickOnCube(e, 1));
+        playerTwoGrid.setOnMouseClicked(e -> handleClickOnCube(e, 2));
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                ImageView view = new ImageView();
+                view.setPickOnBounds(true);
+                view.setPreserveRatio(true);
+                view.setImage(images.get(ShipState.WHITE));
+                playerOneGrid.add(view, i, j);
+
+                ImageView view2 = new ImageView();
+                view2.setPickOnBounds(true);
+                view2.setPreserveRatio(true);
+                view2.setImage(images.get(ShipState.WHITE));
+                playerTwoGrid.add(view2, i, j);
+            }
+        }
+
         resetGame();
     }
 
@@ -95,22 +130,49 @@ public class GameController {
         playerOneField = new Field();
         playerTwoField = new Field();
 
+        playerOneField.addShip(3, 3);
+
         steps.set(0);
         startTime = Instant.now();
         gameOver.setValue(false);
         displayGameState();
         createStopWatch();
-        Platform.runLater(() -> messageLabel.setText("Battle: " + playerOneName + " vs " + playerTwoField + "!"));
+        Platform.runLater(() -> messageLabel.setText("Battle: " + playerOneName + " vs " + playerTwoName + "!"));
     }
 
     private void displayGameState() {
+        playerOneGrid.getChildren().stream().filter(s -> s instanceof ImageView).map(s -> (ImageView) s).forEach(s -> s.setImage(images.get(ShipState.WHITE)));
+        playerTwoGrid.getChildren().stream().filter(s -> s instanceof ImageView).map(s -> (ImageView) s).forEach(s -> s.setImage(images.get(ShipState.WHITE)));
 
+        for (Ship s : playerOneField.getShips()) {
+            for (int x = 0; x < s.getWidth(); x++) {
+                for (int y = 0; y < s.getHeight(); y++) {
+                    ImageView view = (ImageView)playerOneGrid.getChildren().get((s.getY() + y) * 10 + s.getX() + x + 1);
+                    view.setImage(images.get(s.getState()));
+                }
+            }
+        }
+
+        for (Ship s : playerTwoField.getShips()) {
+            for (int x = 0; x < s.getWidth(); x++) {
+                for (int y = 0; y < s.getHeight(); y++) {
+                    ImageView view = (ImageView)playerTwoGrid.getChildren().get((s.getY() + y) * 10 + s.getX() + x + 1);
+                    view.setImage(images.get(s.getState()));
+                }
+            }
+        }
     }
 
-    public void handleClickOnCube(MouseEvent mouseEvent) {
-        int row = GridPane.getRowIndex((Node) mouseEvent.getSource());
-        int col = GridPane.getColumnIndex((Node) mouseEvent.getSource());
+    public void handleClickOnCube(MouseEvent mouseEvent, int target) {
+        int row = GridPane.getRowIndex((Node) mouseEvent.getTarget());
+        int col = GridPane.getColumnIndex((Node) mouseEvent.getTarget());
         log.debug("Cube ({}, {}) is pressed", row, col);
+
+        if (target == 1) {
+            playerOneField.addShip(row, col);
+        } else {
+            playerTwoField.addShip(row, col);
+        }
 
         displayGameState();
     }

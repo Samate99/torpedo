@@ -16,10 +16,10 @@
          </font>
       </Label>
       <Label layoutX="347.0" layoutY="179.0" text="Player 1:" />
-      <TextField fx:id="playerNameTextField" layoutX="403.0" layoutY="174.0" prefHeight="26.0" prefWidth="158.0" />
+      <TextField fx:id="playerOneNameTextField" layoutX="403.0" layoutY="174.0" prefHeight="26.0" prefWidth="158.0" />
       <Button fx:id="startButton" layoutX="430.0" layoutY="257.0" mnemonicParsing="false" onAction="#startAction" prefHeight="51.0" prefWidth="105.0" text="Start game" />
       <Label fx:id="errorLabel" layoutX="407.0" layoutY="147.0" prefHeight="16.0" prefWidth="151.0" textFill="#e30e0e" />
-      <TextField fx:id="playerNameTextField1" layoutX="403.0" layoutY="217.0" prefHeight="26.0" prefWidth="158.0" />
+      <TextField fx:id="playerTwoNameTextField" layoutX="403.0" layoutY="217.0" prefHeight="26.0" prefWidth="158.0" />
       <Label layoutX="347.0" layoutY="222.0" text="Player 2:" />
       <ImageView fitHeight="142.0" fitWidth="312.0" layoutX="21.0" layoutY="159.0" pickOnBounds="true" preserveRatio="true">
          <image>
