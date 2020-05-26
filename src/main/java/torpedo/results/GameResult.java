@@ -24,10 +24,22 @@ public class GameResult {
     private Long id;
 
     /**
-     * The name of the player.
+     * The name of the player 1.
      */
     @Column(nullable = false)
-    private String player;
+    private String player1;
+
+    /**
+     * The name of the player 2.
+     */
+    @Column(nullable = false)
+    private String player2;
+
+    /**
+     * The name of the winner player.
+     */
+    @Column(nullable = false)
+    private String winner;
 
     /**
      * Indicates whether the player has solved the puzzle.

@@ -52,7 +52,6 @@ public class GameController {
     private String playerTwoName;
     private Field playerOneField;
     private Field playerTwoField;
-    private IntegerProperty steps = new SimpleIntegerProperty();
     private Instant startTime;
 
     private GameState gameState;
@@ -100,7 +99,6 @@ public class GameController {
 
     @FXML
     public void initialize() {
-        stepsLabel.textProperty().bind(steps.asString());
         gameOver.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 log.info("Game is over");
@@ -145,7 +143,6 @@ public class GameController {
 
         nextButton.setDisable(true);
 
-        steps.set(0);
         startTime = Instant.now();
         gameOver.setValue(false);
         displayGameState();
@@ -180,7 +177,7 @@ public class GameController {
         for (Integer i : field.getTestedFields()) {
             ImageView view = (ImageView)grid.getChildren().get(i);
             if (view.getImage().equals(images.get(ShipState.WHITE)))
-                if (field.equals(getEnemyPlayerField()))
+                //if (field.equals(getEnemyPlayerField()))
                     view.setImage(images.get(ShipState.CROSS));
         }
     }
@@ -192,6 +189,10 @@ public class GameController {
             } else {
                 notificationText.setText("Place the next ship (" + getCurrentPlayerField().getNextShipName() + ") with size " + getCurrentPlayerField().getNextSize());
             }
+        } else if (gameState == GameState.PLAYER_ONE_WIN) {
+            notificationText.setText(playerOneName + " win the game, click the Finish to view the results!");
+        } else if (gameState == GameState.PLAYER_TWO_WIN) {
+            notificationText.setText(playerTwoName + " win the game, click the Finish to view the results!");
         } else {
             if (nextButton.isDisable()) {
                 notificationText.setText("Press an empty field in right grid");
@@ -199,6 +200,8 @@ public class GameController {
                 notificationText.setText("Press the Next button to pass the round");
             }
         }
+
+        stepsLabel.setText(String.format("%d", getEnemyPlayerField().equals(playerOneField) ? playerOneField.getTestedFields().size() : playerTwoField.getTestedFields().size()));
 
         // Clear grids (set image views to white)
         leftGrid.getChildren().stream().filter(s -> s instanceof ImageView).map(s -> (ImageView) s).forEach(s -> s.setImage(images.get(ShipState.WHITE)));
@@ -209,6 +212,8 @@ public class GameController {
     }
 
     public void handleClickOnGrid(MouseEvent mouseEvent, int target) {
+        if (mouseEvent.getTarget() == null)
+            return;
         int row = GridPane.getRowIndex((Node) mouseEvent.getTarget());
         int col = GridPane.getColumnIndex((Node) mouseEvent.getTarget());
         log.debug("ImageView ({}, {}) is pressed", row, col);
@@ -288,11 +293,14 @@ public class GameController {
     }
 
     private GameResult createGameResult() {
+        boolean isSolved = (gameState == GameState.PLAYER_TWO_WIN || gameState == GameState.PLAYER_ONE_WIN) ? getCurrentPlayerField().isSolved() || getEnemyPlayerField().isSolved() : false;
         GameResult result = GameResult.builder()
-                .player(playerOneName)
-                .solved(false)
+                .player1(playerOneName)
+                .player2(playerTwoName)
+                .solved(isSolved)
+                .winner(isSolved ? (gameState == GameState.PLAYER_ONE_WIN ? playerOneName : playerTwoName) : "-")
                 .duration(Duration.between(startTime, Instant.now()))
-                .steps(steps.get())
+                .steps(gameState == GameState.PLAYER_ONE_WIN ? playerOneField.getTestedFields().size() : playerTwoField.getTestedFields().size())
                 .build();
         return result;
     }
