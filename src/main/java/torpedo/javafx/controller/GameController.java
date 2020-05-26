@@ -151,11 +151,21 @@ public class GameController {
     }
 
     private Field getCurrentPlayerField() {
-        return gameState == GameState.PLAYER_ONE_PLACE || gameState == GameState.PLAYER_ONE_GUESS ? playerOneField : playerTwoField;
+        switch (gameState) {
+            case PLAYER_ONE_GUESS:
+            case PLAYER_ONE_WIN:
+            case PLAYER_ONE_PLACE:
+                return playerOneField;
+            case PLAYER_TWO_PLACE:
+            case PLAYER_TWO_GUESS:
+            case PLAYER_TWO_WIN:
+                return playerTwoField;
+        }
+        return null;
     }
 
     private Field getEnemyPlayerField() {
-        return gameState == GameState.PLAYER_ONE_PLACE || gameState == GameState.PLAYER_ONE_GUESS ? playerTwoField : playerOneField;
+        return getCurrentPlayerField().equals(playerOneField) ? playerTwoField : playerOneField;
     }
 
     private void drawFieldShips(Field field, GridPane grid) {
@@ -168,7 +178,7 @@ public class GameController {
                         view.setImage(images.get(ShipState.RED));
                     } else {
                         if (field.equals(getCurrentPlayerField()))
-                            view.setImage(images.get(s.getState()));
+                            view.setImage(images.get(ShipState.BLACK));
                     }
                 }
             }
@@ -227,7 +237,7 @@ public class GameController {
             }
         } else if (gameState == GameState.PLAYER_ONE_GUESS || gameState == GameState.PLAYER_TWO_GUESS) {
             if (target == 2 && nextButton.isDisable()) {
-                if (!getEnemyPlayerField().tryTip(row, col)) {
+                if (!getEnemyPlayerField().tryGuess(row, col)) {
                     nextButton.setDisable(false);
                 } else {
                     if (getEnemyPlayerField().isSolved()) {

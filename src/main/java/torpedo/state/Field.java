@@ -16,6 +16,10 @@ public class Field {
         this.testedFields = new ArrayList<Integer>();
     }
 
+    /**
+     * This function returns the ship next size.
+     * @return Returns an integer.
+     */
     public int getNextSize() {
         switch (this.ships.size()) {
             case 0:
@@ -31,17 +35,21 @@ public class Field {
         return 0;
     }
 
+    /**
+     * This function returns the next ship display name.
+     * @return Returns the ship display name.
+     */
     public String getNextShipName() {
-        switch (getNextSize()) {
-            case 5:
+        switch (this.ships.size()) {
+            case 0:
                 return "Carrier";
-            case 4:
-                return "Battleship";
-            case 3:
-                return "Destroyer";
-            case 2:
-                return "Submarine";
             case 1:
+                return "Battleship";
+            case 2:
+                return "Destroyer";
+            case 3:
+                return "Submarine";
+            case 4:
                 return "Patrol Boat";
         }
         return "Unknown";
@@ -72,7 +80,7 @@ public class Field {
         return true;
     }
 
-    public boolean tryTip(int x, int y) {
+    public boolean tryGuess(int x, int y) {
         if (!this.testedFields.contains(y * 10 + x + 1))
             this.testedFields.add(y * 10 + x + 1);
         else

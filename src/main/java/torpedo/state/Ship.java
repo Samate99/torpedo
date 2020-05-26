@@ -12,7 +12,6 @@ public class Ship {
     private int width;
     private int height;
 
-    private ShipState state;
     private List<Integer> destroyed;
 
     public Ship(int x, int y, int width, int height) {
@@ -20,7 +19,6 @@ public class Ship {
         this.y = y;
         this.width = width;
         this.height = height;
-        this.state = ShipState.BLACK;
         this.destroyed = new ArrayList<Integer>();
     }
 
