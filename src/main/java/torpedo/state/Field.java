@@ -55,6 +55,14 @@ public class Field {
         return "Unknown";
     }
 
+       /**
+     *This function returns the next ship
+     * @param x coordinate
+     * @param y coordinate
+     * @param side
+     * @return Return the coordinate of the ship
+     */
+    
     public boolean addShip(int x, int y, boolean side) {
         if (this.getNextSize() == 0)
             return false;
@@ -79,6 +87,13 @@ public class Field {
 
         return true;
     }
+    
+      /**
+     * This function returns the game
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @return Return the contents of the coordinate
+     */
 
     public boolean tryGuess(int x, int y) {
         if (!this.testedFields.contains(y * 10 + x + 1))
@@ -107,6 +122,11 @@ public class Field {
         return false;
     }
 
+     /**
+     * Return which ship was destroyed , If all  the destroyed game end
+     * @return Return a boolean
+     */
+    
     public boolean isSolved() {
         for (Ship s : this.ships) {
             int size = 0;
