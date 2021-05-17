@@ -32,8 +32,10 @@ public class LaunchController {
     public void startAction(ActionEvent actionEvent) throws IOException {
         if (playerOneNameTextField.getText().isEmpty()) {
             errorLabel.setText("Enter player 1 name!");
+            System.out.println("first name requested ");
         } else if (playerTwoNameTextField.getText().isEmpty()) {
             errorLabel.setText("Enter player 2 name!");
+            System.out.println("Second name requested ");
         } else {
             fxmlLoader.setLocation(getClass().getResource("/fxml/game.fxml"));
             Parent root = fxmlLoader.load();
