@@ -33,6 +33,7 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         log.info("Starting application...");
+        System.out.println("Starting application...");
         context.init();
         fxmlLoader.setLocation(getClass().getResource("/fxml/launch.fxml"));
         Parent root = fxmlLoader.load();

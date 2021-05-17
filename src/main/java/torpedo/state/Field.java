@@ -21,6 +21,7 @@ public class Field {
      * @return Returns an integer.
      */
     public int getNextSize() {
+        System.out.println("ShipSize");
         switch (this.ships.size()) {
             case 0:
                 return 5;
@@ -40,6 +41,7 @@ public class Field {
      * @return Returns the ship display name.
      */
     public String getNextShipName() {
+        System.out.println("Get ship name");
         switch (this.ships.size()) {
             case 0:
                 return "Carrier";
@@ -64,6 +66,7 @@ public class Field {
      */
     
     public boolean addShip(int x, int y, boolean side) {
+        System.out.println("Add ship");
         if (this.getNextSize() == 0)
             return false;
 
@@ -96,6 +99,7 @@ public class Field {
      */
 
     public boolean tryGuess(int x, int y) {
+        System.out.println("Try");
         if (!this.testedFields.contains(y * 10 + x + 1))
             this.testedFields.add(y * 10 + x + 1);
         else
@@ -114,7 +118,6 @@ public class Field {
                     return false;
 
                 s.getDestroyed().add(destroyed);
-
                 return true;
             }
         }
@@ -128,6 +131,7 @@ public class Field {
      */
     
     public boolean isSolved() {
+       System.out.println("hit");
         for (Ship s : this.ships) {
             int size = 0;
             if (s.getWidth() == 1) {

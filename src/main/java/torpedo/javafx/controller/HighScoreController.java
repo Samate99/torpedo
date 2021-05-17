@@ -60,7 +60,8 @@ public class HighScoreController {
     @FXML
     private void initialize() {
         log.debug("Loading high scores...");
-        List<GameResult> highScoreList = gameResultDao.findBest(10);
+        System.out.println("Loading high scores...");
+        List<GameResult> highScoreList = gameResultDao.findBest(20);
 
         player1.setCellValueFactory(new PropertyValueFactory<>("player1"));
         player2.setCellValueFactory(new PropertyValueFactory<>("player2"));
@@ -109,6 +110,7 @@ public class HighScoreController {
     public void handleRestartButton(ActionEvent actionEvent) throws IOException {
         log.debug("{} is pressed", ((Button) actionEvent.getSource()).getText());
         log.info("Loading launch scene...");
+        System.out.println("Loading launch scene...");
         fxmlLoader.setLocation(getClass().getResource("/fxml/launch.fxml"));
         Parent root = fxmlLoader.load();
         Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();

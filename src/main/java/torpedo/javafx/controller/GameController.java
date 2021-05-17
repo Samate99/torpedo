@@ -103,6 +103,8 @@ public class GameController {
             if (newValue) {
                 log.info("Game is over");
                 log.debug("Saving result to database...");
+                System.out.println("Game is over");
+                System.out.println("Saving result to database...");
                 gameResultDao.persist(createGameResult());
                 stopWatchTimeline.stop();
             }
