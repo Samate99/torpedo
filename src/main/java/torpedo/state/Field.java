@@ -17,8 +17,8 @@ public class Field {
     }
 
     /**
-     * This function returns the ship next size.
-     * @return Returns an integer.
+     * This function returns the ships size.
+     * @return the size of the ships.
      */
     public int getNextSize() {
         System.out.println("ShipSize");
@@ -37,8 +37,8 @@ public class Field {
     }
 
     /**
-     * This function returns the next ship display name.
-     * @return Returns the ship display name.
+     * This function returns the ships display name.
+     * @return the ships display name.
      */
     public String getNextShipName() {
         System.out.println("Get ship name");
@@ -58,11 +58,11 @@ public class Field {
     }
 
        /**
-     *This function returns the next ship
-     * @param x coordinate
-     * @param y coordinate
-     * @param side
-     * @return Return the coordinate of the ship
+     *This function returns the ships
+     * @param x coordinate of the sip
+     * @param y coordinate of the sip
+     * @param side position of the ship
+     * @return a ship to the game
      */
     
     public boolean addShip(int x, int y, boolean side) {
@@ -92,10 +92,10 @@ public class Field {
     }
     
       /**
-     * This function returns the game
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @return Return the contents of the coordinate
+     * This function is the game try-guess mechanism
+     * @param x is one of the coordinate of the guess
+     * @param y is one of the coordinate of the guess
+     * @return the game try-guess mechanism
      */
 
     public boolean tryGuess(int x, int y) {
@@ -126,8 +126,8 @@ public class Field {
     }
 
      /**
-     * Return which ship was destroyed , If all  the destroyed game end
-     * @return Return a boolean
+     * This function check the game solve status
+     * @return the game solve status
      */
     
     public boolean isSolved() {

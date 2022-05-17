@@ -15,8 +15,8 @@ public class Ship {
     private List<Integer> destroyed;
   /**
      * Specific of the ship
-     * @param x x coordinate
-     * @param y y coordinate
+     * @param x is a  coordinate
+     * @param y is a coordinate
      * @param width an integer (the ship width)
      * @param height an integer (the ship height)
      */
@@ -29,10 +29,10 @@ public class Ship {
         this.destroyed = new ArrayList<Integer>();
     }
    /**
-     *This function returns the ship opportunities
-     * @param ship
-     * @param space
-     * @return return the
+     *This function returns the overlap status
+     * @param ship a "ship" on the field
+     * @param space the required distance between 2 object
+     * @return return the overlap status
      */
     public boolean isOverlap (Ship ship, int space) {
         return x < ship.x + ship.width + space && x + width + space > ship.x && y < ship.y + ship.height + space && y + height + space > ship.y;
